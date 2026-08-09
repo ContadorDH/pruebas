@@ -3,8 +3,8 @@
   "short_name": "Asistencia Bochica",
   "description": "App para registrar asistencias en Bochica Sur",
  
-  "start_url": "/soporte/",
-  "scope": "/soporte/",
+  "start_url": "/pruebas/",
+  "scope": "/pruebas/",
   "display": "standalone",
   "theme_color": "#0066ff",
   "background_color": "#f4f6fb",

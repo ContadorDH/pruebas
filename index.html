@@ -3905,6 +3905,34 @@ async function cargarPerfil(){
 
 }
 
+// Igual que cargarPerfil(), pero si falla (por ejemplo por una red
+// lenta que agota el tiempo de espera) reintenta un par de veces
+// antes de rendirse. Devuelve el perfil si lo logró, o null si tras
+// todos los intentos sigue sin poder cargarlo. Se usa tanto al abrir
+// la app con una sesión guardada como al iniciar sesión manualmente,
+// para asegurar que nunca se entre "a medias" (sesión sin datos).
+async function cargarPerfilConReintentos(maxIntentos = 3, esperaMs = 1500){
+
+    for(let intento = 1; intento <= maxIntentos; intento++){
+
+        const perfil = await cargarPerfil();
+
+        if(perfil) return perfil;
+
+        console.warn(
+            `cargarPerfil: intento ${intento} de ${maxIntentos} falló.`
+        );
+
+        if(intento < maxIntentos){
+            await new Promise(r => setTimeout(r, esperaMs));
+        }
+
+    }
+
+    return null;
+
+}
+
 async function probarConexionSupabase(){
 
     console.log("=== PROBANDO SUPABASE ===");
@@ -4280,14 +4308,18 @@ async function loginSupabase(){
 
     try{
 
-        const { data, error } =
-        await supabase.auth.signInWithPassword({
-
-            email: correo,
-
-            password: password
-
-        });
+        // Límite de tiempo para que signInWithPassword nunca se
+        // quede "pegado" indefinidamente si la red falla a mitad
+        // de la petición (antes no tenía ningún límite).
+        const { data, error } = await conLimiteDeTiempo(
+            supabase.auth.signInWithPassword({
+                email: correo,
+                password: password
+            }),
+            15000,
+            { data: null, error: { message: "La conexión tardó demasiado. Verifica tu internet e intenta de nuevo." } },
+            "iniciar sesión (signInWithPassword)"
+        );
 
         if(error){
 
@@ -4308,12 +4340,29 @@ async function loginSupabase(){
 
         App.usuario = data.user;
 
-        await cargarPerfil();
+        // Se reintenta varias veces antes de rendirse: preferimos
+        // tardar un poco más a decirle "Bienvenido" a alguien cuyo
+        // perfil en realidad no cargó.
+        const perfilCargado = await cargarPerfilConReintentos();
 
         console.log("===== PERFIL =====");
 console.log(App.perfil);
 console.log("===== IGLESIA =====");
 console.log(App.iglesia);
+
+        if(!perfilCargado){
+
+            hideBusy();
+
+            mostrarAlerta(
+                "⚠️",
+                "Iniciaste sesión pero no se pudo cargar tu información por una conexión lenta o inestable. Intenta de nuevo."
+            );
+
+            // NO entra aún a la aplicación.
+            return;
+
+        }
 
         aplicarTituloApp();
 
@@ -5648,7 +5697,13 @@ async function initApp() {
 
     // -------- LOGIN --------
 
-    if(App.session){
+    // IMPORTANTE: antes esto solo miraba si había un App.session (el
+    // token), y lo ocultaba aunque el perfil/iglesia del usuario no
+    // hubiera cargado (por ejemplo, por una red lenta). Eso dejaba
+    // la app "abierta" pero sin datos reales (título pegado en
+    // "Asistencia", nada cargado). Ahora solo se considera que la
+    // sesión realmente inició cuando además existe App.perfil.
+    if(App.session && App.perfil){
 
         document.getElementById("loginScreen").style.display = "none";
 
@@ -5745,42 +5800,11 @@ if(esRecuperacion){
 
     console.log("✅ Sesión encontrada.");
 
-    let perfilCargado = await cargarPerfil();
-
-    // Si la red iba lenta (típico al abrir la app recién instalada)
-    // cargarPerfil() puede agotar su tiempo de espera y devolver
-    // null aunque la sesión sí sea válida. Antes esto dejaba el
-    // título pegado en "Asistencia" y saltaba la verificación del
-    // código de registro. Ahora se reintenta una vez más en segundo
-    // plano, sin bloquear el Splash ni el resto del inicio.
-    if(!perfilCargado){
-
-        console.warn(
-            "El perfil no cargó en el primer intento (posible red " +
-            "lenta). Reintentando en segundo plano..."
-        );
-
-        setTimeout(async () => {
-
-            const perfilReintento = await cargarPerfil();
-
-            if(perfilReintento){
-
-                console.log("✅ Perfil cargado en el reintento.");
-
-                aplicarTituloApp();
-
-                actualizarMenuSuperAdmin();
-
-            }else{
-
-                console.warn("El reintento de carga de perfil también falló.");
-
-            }
-
-        }, 1500);
-
-    }
+    // Se reintenta hasta 3 veces (con pausas cortas) antes de
+    // rendirse. Se espera de verdad (await) porque preferimos
+    // tardar un poco más a mostrar la app "a medias" con una
+    // sesión que en realidad no cargó los datos del usuario.
+    const perfilCargado = await cargarPerfilConReintentos();
 
     console.log("===== PERFIL =====");
     console.log(App.perfil);
@@ -5788,25 +5812,42 @@ if(esRecuperacion){
     console.log("===== IGLESIA =====");
     console.log(App.iglesia);
 
-    aplicarTituloApp();
+    if(!perfilCargado){
 
-    actualizarMenuSuperAdmin();
+        console.error(
+            "No fue posible cargar el perfil tras varios intentos."
+        );
 
-    console.log("Super Admin:", App.esSuperAdmin);
+        document.getElementById("loginScreen").style.display = "flex";
 
-    console.log("Usuario:", App.perfil?.nombre);
-
-    console.log("Rol:", App.perfil?.rol);
-
-    const ok = await verificarCodigoRegistroActual();
-
-    if(ok){
-
-        document.getElementById("loginScreen").style.display = "none";
+        mostrarAlerta(
+            "⚠️",
+            "No se pudo verificar tu sesión por una conexión lenta o inestable. Intenta iniciar sesión de nuevo."
+        );
 
     }else{
 
-        document.getElementById("loginScreen").style.display = "flex";
+        aplicarTituloApp();
+
+        actualizarMenuSuperAdmin();
+
+        console.log("Super Admin:", App.esSuperAdmin);
+
+        console.log("Usuario:", App.perfil?.nombre);
+
+        console.log("Rol:", App.perfil?.rol);
+
+        const ok = await verificarCodigoRegistroActual();
+
+        if(ok){
+
+            document.getElementById("loginScreen").style.display = "none";
+
+        }else{
+
+            document.getElementById("loginScreen").style.display = "flex";
+
+        }
 
     }
 

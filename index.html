@@ -5723,8 +5723,9 @@ if(esRecuperacion){
 
 }
 
-// 2. Probar conexión
-await probarConexionSupabase();
+// 2. Probar conexión (en segundo plano: es solo un diagnóstico y
+// no debe retrasar el inicio de sesión ni el Splash).
+probarConexionSupabase();
 
 // 3. Si es un link de recuperación, NUNCA se entra como si el
 // usuario hubiera iniciado sesión: se deja la pantalla de login
@@ -5744,7 +5745,42 @@ if(esRecuperacion){
 
     console.log("✅ Sesión encontrada.");
 
-    await cargarPerfil();
+    let perfilCargado = await cargarPerfil();
+
+    // Si la red iba lenta (típico al abrir la app recién instalada)
+    // cargarPerfil() puede agotar su tiempo de espera y devolver
+    // null aunque la sesión sí sea válida. Antes esto dejaba el
+    // título pegado en "Asistencia" y saltaba la verificación del
+    // código de registro. Ahora se reintenta una vez más en segundo
+    // plano, sin bloquear el Splash ni el resto del inicio.
+    if(!perfilCargado){
+
+        console.warn(
+            "El perfil no cargó en el primer intento (posible red " +
+            "lenta). Reintentando en segundo plano..."
+        );
+
+        setTimeout(async () => {
+
+            const perfilReintento = await cargarPerfil();
+
+            if(perfilReintento){
+
+                console.log("✅ Perfil cargado en el reintento.");
+
+                aplicarTituloApp();
+
+                actualizarMenuSuperAdmin();
+
+            }else{
+
+                console.warn("El reintento de carga de perfil también falló.");
+
+            }
+
+        }, 1500);
+
+    }
 
     console.log("===== PERFIL =====");
     console.log(App.perfil);

@@ -5754,67 +5754,38 @@ async function verAsistencia(mes){
 
     showLoading(true);
 
-    const listado =
-        document.getElementById("listado");
-
+    const listado = document.getElementById("listado");
     listado.innerHTML = "";
 
     try{
 
         console.log("===== VER ASISTENCIA =====");
-
-        console.log(
-            "Usuario autenticado:",
-            App.usuario?.id
-        );
-
-        console.log(
-            "Perfil:",
-            App.perfil?.id
-        );
-
-        console.log(
-            "Iglesia perfil:",
-            App.perfil?.iglesia_id
-        );
-
-        console.log(
-            "Iglesia objeto:",
-            App.iglesia?.id
-        );
-
-        console.log(
-            "Iglesia visualizada:",
-            App.iglesiaVisualizada?.id
-        );
+        console.log("Usuario autenticado:", App.usuario?.id);
+        console.log("Perfil:", App.perfil?.id);
+        console.log("Iglesia perfil:", App.perfil?.iglesia_id);
+        console.log("Iglesia objeto:", App.iglesia?.id);
+        console.log("Iglesia visualizada:", App.iglesiaVisualizada?.id);
 
 
-        // =====================================================
-        // DETERMINAR QUÉ IGLESIA SE DEBE CONSULTAR
-        // =====================================================
-
-        const esSuperAdminVisualizando =
-            App.esSuperAdmin &&
-            App.iglesiaVisualizada?.id;
-
+        // =========================================================
+        // OBTENER DATOS
+        // =========================================================
 
         let data;
         let error;
 
 
-        // =====================================================
-        // SUPERADMIN:
-        // CONSULTAR LA IGLESIA SELECCIONADA MEDIANTE RPC
-        // =====================================================
+        // =========================================================
+        // SUPERADMIN VISUALIZANDO OTRA IGLESIA
+        // =========================================================
 
-        if(esSuperAdminVisualizando){
-
-            console.log(
-                "🏛️ Modo superadministrador."
-            );
+        if(
+            App.esSuperAdmin &&
+            App.iglesiaVisualizada?.id
+        ){
 
             console.log(
-                "Consultando iglesia seleccionada:",
+                "🏛️ Superadmin consultando:",
                 App.iglesiaVisualizada.id
             );
 
@@ -5831,23 +5802,47 @@ async function verAsistencia(mes){
             error = resultado.error;
 
 
-            console.log(
-                "📊 Asistencias recibidas por RPC:",
-                data
-            );
+            // =====================================================
+            // ADAPTAR RESULTADO DE LA RPC
+            //
+            // La RPC devuelve:
+            // usuario_nombre
+            //
+            // La interfaz original utiliza:
+            // r.perfiles.nombre
+            //
+            // Así NO tocamos el diseño original.
+            // =====================================================
+
+            if(!error && Array.isArray(data)){
+
+                data = data.map(r => {
+
+                    return {
+                        ...r,
+
+                        perfiles: {
+                            nombre:
+                                r.usuario_nombre ||
+                                "Sin nombre"
+                        }
+                    };
+
+                });
+
+            }
 
         }
 
 
-        // =====================================================
-        // USUARIO NORMAL:
-        // MANTENER CONSULTA ACTUAL
-        // =====================================================
+        // =========================================================
+        // USUARIO NORMAL
+        // =========================================================
 
         else{
 
             console.log(
-                "👤 Modo usuario normal."
+                "👤 Consultando asistencia de la iglesia propia."
             );
 
             const resultado =
@@ -5872,16 +5867,19 @@ async function verAsistencia(mes){
         }
 
 
-        // =====================================================
+        console.log(
+            "Datos recibidos:",
+            data
+        );
+
+
+        // =========================================================
         // ERROR
-        // =====================================================
+        // =========================================================
 
         if(error){
 
-            console.error(
-                "❌ Error obteniendo asistencias:",
-                error
-            );
+            console.error(error);
 
             listado.innerHTML =
                 `<div class="row">
@@ -5893,37 +5891,23 @@ async function verAsistencia(mes){
         }
 
 
-        // =====================================================
-        // ASEGURAR ARRAY
-        // =====================================================
-
-        if(!Array.isArray(data)){
-
-            data = [];
-
-        }
-
-
-        // =====================================================
+        // =========================================================
         // FILTRAR POR MES
-        // =====================================================
+        // =========================================================
 
-        const filas =
-            data.filter(r => {
+        const filas = data.filter(r => {
 
-                const fecha =
-                    new Date(r.fecha);
+            const fecha =
+                new Date(r.fecha);
 
-                return (
-                    meses[fecha.getMonth()] === mes
-                );
+            return meses[fecha.getMonth()] === mes;
 
-            });
+        });
 
 
-        // =====================================================
+        // =========================================================
         // SIN REGISTROS
-        // =====================================================
+        // =========================================================
 
         if(filas.length === 0){
 
@@ -5937,152 +5921,106 @@ async function verAsistencia(mes){
         }
 
 
-        // =====================================================
+        // =========================================================
         // MOSTRAR REGISTROS
-        // =====================================================
+        //
+        // ⚠️ ESTE BLOQUE CONSERVA EL DISEÑO ORIGINAL
+        // =========================================================
 
-        listado.innerHTML =
-            filas.map(r => {
+        listado.innerHTML = filas.map(r => {
 
-                const fecha =
-                    new Date(r.fecha)
-                        .toLocaleString("es-CO");
+            const fecha =
+                new Date(r.fecha)
+                    .toLocaleString("es-CO");
 
+            const esPropio =
+                App.perfil &&
+                App.perfil.id === r.usuario_id;
 
-                // =================================================
-                // DETERMINAR SI EL REGISTRO ES DEL USUARIO ACTUAL
-                // =================================================
-
-                const esPropio =
-                    App.perfil &&
-                    App.perfil.id === r.usuario_id;
-
-
-                // =================================================
-                // NOMBRE DEL USUARIO
-                //
-                // Usuario normal:
-                //     r.perfiles.nombre
-                //
-                // Superadmin RPC:
-                //     r.usuario_nombre
-                // =================================================
-
-                const nombreUsuario =
-                    r.usuario_nombre ||
+            const usuarioEsc =
+                escapeHTML(
                     r.perfiles?.nombre ||
-                    "Sin nombre";
+                    "Sin nombre"
+                );
+
+            const fechaEsc =
+                escapeHTML(fecha);
 
 
-                const usuarioEsc =
-                    escapeHTML(
-                        nombreUsuario
-                    );
+            return `
 
+👤 ${usuarioEsc}
 
-                const fechaEsc =
-                    escapeHTML(
-                        fecha
-                    );
+📅 ${fechaEsc}
 
+<button
 
-                // =================================================
-                // HTML DEL REGISTRO
-                // =================================================
+title="Compartir"
 
-                return `
+onclick="compartirRegistro(
 
-                    👤 ${usuarioEsc}
+'${encodeURIComponent(r.usuario || "")}',
 
-                    📅 ${fechaEsc}
+'${encodeURIComponent(fecha)}',
 
-                    <button
+'${r.hermanos}',
 
-                        title="Compartir"
+'${r.hermanas}',
 
-                        onclick="compartirRegistro(
+'${r.amigos}',
 
-                            '${encodeURIComponent(r.usuario || "")}',
+'${r.adolescentes}',
 
-                            '${encodeURIComponent(fecha)}',
+'${r.ninos}',
 
-                            '${r.hermanos}',
+'${r.total}'
 
-                            '${r.hermanas}',
+)"
 
-                            '${r.amigos}',
+style="
+width:40px;
+height:40px;
+border-radius:50%;
+border:none;
+background:linear-gradient(135deg,var(--primary-dark),var(--primary));
+color:#fff;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+box-shadow:0 4px 10px rgba(0,0,0,.25);
+">
 
-                            '${r.adolescentes}',
+🙋‍♂️ ${r.hermanos}
+🙋‍♀️ ${r.hermanas}
+🤝 ${r.amigos}
+👧 ${r.adolescentes}
+🧒 ${r.ninos}
 
-                            '${r.ninos}',
+🔢 Total:
+${r.total}
 
-                            '${r.total}'
+${
+    esPropio
+    ?
 
-                        )"
+    `
+    🗑️ Eliminar
+    `
 
-                        style="
-                            width:40px;
-                            height:40px;
-                            border-radius:50%;
-                            border:none;
-                            background:linear-gradient(
-                                135deg,
-                                var(--primary-dark),
-                                var(--primary)
-                            );
-                            color:#fff;
-                            display:flex;
-                            align-items:center;
-                            justify-content:center;
-                            cursor:pointer;
-                            box-shadow:0 4px 10px rgba(0,0,0,.25);
-                        "
-                    >
+    :
 
-                    👤
+    ""
+}
 
-                    </button>
+`;
 
-
-                    🙋‍♂️ ${r.hermanos}
-
-                    🙋‍♀️ ${r.hermanas}
-
-                    🤝 ${r.amigos}
-
-                    👧 ${r.adolescentes}
-
-                    🧒 ${r.ninos}
-
-
-                    🔢 Total:
-                    ${r.total}
-
-
-                    ${
-                        esPropio
-                        ?
-
-                        `
-                        🗑️ Eliminar
-                        `
-
-                        :
-
-                        ""
-                    }
-
-                `;
-
-            }).join("");
+        }).join("");
 
     }
     catch(e){
 
-        console.error(
-            "❌ Error inesperado:",
-            e
-        );
+        console.error(e);
 
         listado.innerHTML =
             `<div class="row">

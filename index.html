@@ -3890,6 +3890,11 @@ async function cargarPerfil(){
         console.error("Error cargando perfil:");
         console.error(error);
 
+        // Se guarda el mensaje real para poder mostrarlo en pantalla
+        // y saber exactamente qué está fallando (permisos, red, etc.)
+        // en vez de solo decir "conexión lenta".
+        App.ultimoErrorPerfil = error.message || JSON.stringify(error);
+
         return null;
 
     }
@@ -3897,7 +3902,14 @@ async function cargarPerfil(){
     App.perfil = data;
     App.iglesia = data.iglesias ?? null;
 
-    console.log("Versión sesión:", App.iglesia.version_sesion);
+    // Antes esto asumía que siempre hay una iglesia vinculada y
+    // tronaba si App.iglesia venía null (perfil sin iglesia
+    // asignada), lo que hacía fallar cargarPerfil() por completo.
+    if(App.iglesia){
+        console.log("Versión sesión:", App.iglesia.version_sesion);
+    }else{
+        console.warn("Este perfil no tiene una iglesia vinculada.");
+    }
 
     App.esSuperAdmin = data.rol === "superadmin";
 
@@ -4356,7 +4368,9 @@ console.log(App.iglesia);
 
             mostrarAlerta(
                 "⚠️",
-                "Iniciaste sesión pero no se pudo cargar tu información por una conexión lenta o inestable. Intenta de nuevo."
+                "No se pudo cargar tu información: " +
+                (App.ultimoErrorPerfil || "conexión lenta o inestable") +
+                ". Intenta de nuevo."
             );
 
             // NO entra aún a la aplicación.
@@ -5822,7 +5836,9 @@ if(esRecuperacion){
 
         mostrarAlerta(
             "⚠️",
-            "No se pudo verificar tu sesión por una conexión lenta o inestable. Intenta iniciar sesión de nuevo."
+            "No se pudo verificar tu sesión: " +
+            (App.ultimoErrorPerfil || "conexión lenta o inestable") +
+            ". Intenta iniciar sesión de nuevo."
         );
 
     }else{

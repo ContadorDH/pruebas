@@ -5750,132 +5750,50 @@ async function descargarMesXLSX(){
 
 
 
+
+  
 async function verAsistencia(mes){
 
-    showLoading(true);
-
-    const listado = document.getElementById("listado");
-    listado.innerHTML = "";
-
-    try{
-
-        console.log("===== VER ASISTENCIA =====");
-        console.log("Usuario autenticado:", App.usuario?.id);
-        console.log("Perfil:", App.perfil?.id);
-        console.log("Iglesia perfil:", App.perfil?.iglesia_id);
-        console.log("Iglesia objeto:", App.iglesia?.id);
-        console.log("Iglesia visualizada:", App.iglesiaVisualizada?.id);
 
 
-        // =========================================================
-        // OBTENER DATOS
-        // =========================================================
+showLoading(true);
 
-        let data;
-        let error;
+const listado = document.getElementById("listado");
+listado.innerHTML = "";
 
+try{
 
-        // =========================================================
-        // SUPERADMIN: IGLESIA SELECCIONADA
-        // =========================================================
+    console.log("===== VER ASISTENCIA =====");
+    console.log("Usuario autenticado:", App.usuario?.id);
+    console.log("Perfil:", App.perfil?.id);
+    console.log("Iglesia perfil:", App.perfil?.iglesia_id);
+    console.log("Iglesia objeto:", App.iglesia?.id);
 
-        if(
-            App.esSuperAdmin &&
-            App.iglesiaVisualizada?.id
-        ){
+const { data, error } = await supabase
+    .from("asistencias")
+    .select(`
+        *,
+        perfiles!usuario_id (
+            nombre
+        )
+    `)
+    .order("fecha", { ascending:false });
 
-            console.log(
-                "🏛️ Consultando asistencia de:",
-                App.iglesiaVisualizada.id
-            );
-
-            const resultado =
-                await supabase.rpc(
-                    "listar_asistencias_iglesia_superadmin",
-                    {
-                        p_iglesia_id:
-                            App.iglesiaVisualizada.id
-                    }
-                );
-
-            data = resultado.data;
-            error = resultado.error;
+console.log(data);
 
 
-            // La RPC devuelve usuario_nombre.
-            // Lo convertimos al mismo formato que
-            // utilizaba la consulta original.
-            if(!error && Array.isArray(data)){
-
-                data = data.map(r => ({
-                    ...r,
-
-                    perfiles: {
-                        nombre:
-                            r.usuario_nombre ||
-                            "Sin nombre"
-                    }
-
-                }));
-
-            }
-
-        }
-
-
-        // =========================================================
-        // USUARIO NORMAL: CONSULTA ORIGINAL
-        // =========================================================
-
-        else{
-
-            const resultado =
-                await supabase
-                    .from("asistencias")
-                    .select(`
-                        *,
-                        perfiles!usuario_id (
-                            nombre
-                        )
-                    `)
-                    .order(
-                        "fecha",
-                        {
-                            ascending:false
-                        }
-                    );
-
-            data = resultado.data;
-            error = resultado.error;
-
-        }
-
-
-        console.log(data);
-
-
-        // =========================================================
-        // ERROR
-        // =========================================================
 
         if(error){
 
             console.error(error);
 
-            listado.innerHTML =
-                `<div class="row">
-                    ⚠️ Error obteniendo datos.
-                </div>`;
+            listado.innerHTML = `<div class="row">⚠️ Error obteniendo datos.</div>`;
 
             return;
 
         }
 
-
-        // =========================================================
-        // FILTRAR POR MES
-        // =========================================================
-
+        // Filtrar por mes
         const filas = data.filter(r=>{
 
             const fecha = new Date(r.fecha);
@@ -5884,50 +5802,38 @@ async function verAsistencia(mes){
 
         });
 
-
         if(filas.length===0){
 
-            listado.innerHTML =
-                `<div class="row">
-                    ⚠️ No hay registros en ${mes}.
-                </div>`;
+            listado.innerHTML = `<div class="row">⚠️ No hay registros en ${mes}.</div>`;
 
             return;
 
         }
 
-
-        // =========================================================
-        // MOSTRAR ASISTENCIA
-        //
-        // ESTE BLOQUE ES EL ORIGINAL.
-        // NO CAMBIAMOS SU ESTRUCTURA.
-        // =========================================================
-
         listado.innerHTML = filas.map(r=>{
 
-            const fecha =
-                new Date(r.fecha)
-                    .toLocaleString("es-CO");
+            const fecha = new Date(r.fecha).toLocaleString("es-CO");
 
-            const esPropio =
-                App.perfil &&
-                App.perfil.id === r.usuario_id;
+            const esPropio = App.perfil && App.perfil.id === r.usuario_id;
 
-            const usuarioEsc =
-                escapeHTML(
-                    r.perfiles?.nombre ||
-                    "Sin nombre"
-                );
-
-            const fechaEsc =
-                escapeHTML(fecha);
+           const usuarioEsc = escapeHTML(
+    r.perfiles?.nombre || "Sin nombre"
+);
+            const fechaEsc = escapeHTML(fecha);
 
             return `
 
-👤 ${usuarioEsc}
+<div class="row">
 
-📅 ${fechaEsc}
+<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+
+<div style="flex:1;min-width:0;">
+
+<strong>👤 ${usuarioEsc}</strong>
+
+<small>📅 ${fechaEsc}</small>
+
+</div>
 
 <button
 
@@ -5967,28 +5873,48 @@ cursor:pointer;
 box-shadow:0 4px 10px rgba(0,0,0,.25);
 ">
 
+<i class="fas fa-share-alt"></i>
+
+</button>
+
+</div>
+
+<div style="margin-top:8px">
+
 🙋‍♂️ ${r.hermanos}
 🙋‍♀️ ${r.hermanas}
 🤝 ${r.amigos}
 👧 ${r.adolescentes}
 🧒 ${r.ninos}
 
+</div>
+
+<small>
+
 🔢 Total:
-${r.total}
+<strong>${r.total}</strong>
+
+</small>
 
 ${
 esPropio
 ?
 
-`
+`<button
+style="margin-top:8px;background:#ff4444;color:#fff;border:0;padding:6px 10px;border-radius:8px;cursor:pointer"
+onclick="eliminarAsistencia('${r.id}')">
+
 🗑️ Eliminar
-`
+
+</button>`
 
 :
 
 ""
 
 }
+
+</div>
 
 `;
 
@@ -5999,10 +5925,7 @@ esPropio
 
         console.error(e);
 
-        listado.innerHTML =
-            `<div class="row">
-                ⚠️ Error obteniendo datos.
-            </div>`;
+        listado.innerHTML = `<div class="row">⚠️ Error obteniendo datos.</div>`;
 
     }
     finally{

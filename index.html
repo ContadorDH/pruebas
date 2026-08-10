@@ -2952,20 +2952,16 @@ function ocultarSplash(){
 const App = {
 
     session: null,
-
     perfil: null,
-
     iglesia: null,
-
     usuario: null,
-
     esSuperAdmin: false,
-
     modoRecuperacion: false,
+    sesionLista: false,
 
-    // ✅ Solo será true cuando la sesión y el perfil
-    // hayan sido restaurados correctamente.
-    sesionLista: false
+    // Iglesia que el superadmin está consultando.
+    // NO reemplaza App.iglesia.
+    iglesiaVisualizada: null
 
 };
 
@@ -3488,12 +3484,126 @@ function cerrarEditarUsuario(){
 
 
 
-function entrarComoIglesia(id){
+async function entrarComoIglesia(id){
 
-    mostrarAlerta(
-        "🏛",
-        "Esta función estará disponible en el siguiente paso."
-    );
+    try{
+
+        // =====================================================
+        // SEGURIDAD
+        // =====================================================
+
+        if(!App.session || !App.usuario){
+
+            mostrarAlerta(
+                "⚠️",
+                "No existe una sesión activa."
+            );
+
+            return;
+
+        }
+
+        if(!App.esSuperAdmin){
+
+            mostrarAlerta(
+                "❌",
+                "No tienes permisos para entrar a otra iglesia."
+            );
+
+            return;
+
+        }
+
+        if(!id){
+
+            mostrarAlerta(
+                "⚠️",
+                "No se recibió la iglesia seleccionada."
+            );
+
+            return;
+
+        }
+
+        // =====================================================
+        // BUSCAR IGLESIA EN LA LISTA YA CARGADA
+        // =====================================================
+
+        const iglesia =
+            iglesiasDashboard.find(
+                i => i.id === id
+            );
+
+        if(!iglesia){
+
+            mostrarAlerta(
+                "❌",
+                "No fue posible encontrar la iglesia seleccionada."
+            );
+
+            console.error(
+                "Iglesia no encontrada:",
+                id
+            );
+
+            return;
+
+        }
+
+        // =====================================================
+        // GUARDAR CONTEXTO DE VISUALIZACIÓN
+        // =====================================================
+
+        App.iglesiaVisualizada = iglesia;
+
+        console.log(
+            "🏛️ Iglesia seleccionada para consulta:",
+            App.iglesiaVisualizada
+        );
+
+        console.log(
+            "🔐 Iglesia real del superadmin:",
+            App.iglesia
+        );
+
+        // =====================================================
+        // CERRAR PANEL SUPERADMIN
+        // =====================================================
+
+        document
+            .getElementById("panelSuperAdmin")
+            .classList.add("oculto");
+
+        // =====================================================
+        // MOSTRAR AVISO TEMPORAL
+        // =====================================================
+
+        mostrarAlerta(
+            "🏛️",
+            "Iglesia seleccionada: " +
+            (iglesia.nombre || "Iglesia")
+        );
+
+        // =====================================================
+        // ABRIR VISTA DE ASISTENCIA
+        // =====================================================
+
+        await verAsistencia();
+
+    }
+    catch(err){
+
+        console.error(
+            "❌ Error entrando a la iglesia:",
+            err
+        );
+
+        mostrarAlerta(
+            "❌",
+            "No fue posible abrir la iglesia seleccionada."
+        );
+
+    }
 
 }
 

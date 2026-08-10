@@ -3526,24 +3526,44 @@ async function entrarComoIglesia(id){
         }
 
         // =====================================================
-        // BUSCAR IGLESIA EN LA LISTA YA CARGADA
+        // BUSCAR DIRECTAMENTE LA IGLESIA SELECCIONADA
         // =====================================================
 
-        const iglesia =
-            iglesiasDashboard.find(
-                i => i.id === id
+        const { data: iglesia, error } =
+            await supabase
+                .from("iglesias")
+                .select(`
+                    id,
+                    nombre,
+                    codigo,
+                    color,
+                    logo,
+                    version_sesion
+                `)
+                .eq("id", id)
+                .single();
+
+        if(error){
+
+            console.error(
+                "❌ Error cargando iglesia seleccionada:",
+                error
             );
+
+            mostrarAlerta(
+                "❌",
+                "No fue posible cargar la iglesia seleccionada."
+            );
+
+            return;
+
+        }
 
         if(!iglesia){
 
             mostrarAlerta(
                 "❌",
-                "No fue posible encontrar la iglesia seleccionada."
-            );
-
-            console.error(
-                "Iglesia no encontrada:",
-                id
+                "La iglesia seleccionada no existe."
             );
 
             return;
@@ -3562,20 +3582,20 @@ async function entrarComoIglesia(id){
         );
 
         console.log(
-            "🔐 Iglesia real del superadmin:",
+            "🔐 Iglesia REAL del superadmin:",
             App.iglesia
         );
 
         // =====================================================
-        // CERRAR PANEL SUPERADMIN
+        // CERRAR CENTRO DE ADMINISTRACIÓN
         // =====================================================
 
         document
-            .getElementById("panelSuperAdmin")
-            .classList.add("oculto");
+            .getElementById("superAdminScreen")
+            .classList.remove("active");
 
         // =====================================================
-        // MOSTRAR AVISO TEMPORAL
+        // AVISO
         // =====================================================
 
         mostrarAlerta(
@@ -3583,12 +3603,6 @@ async function entrarComoIglesia(id){
             "Iglesia seleccionada: " +
             (iglesia.nombre || "Iglesia")
         );
-
-        // =====================================================
-        // ABRIR VISTA DE ASISTENCIA
-        // =====================================================
-
-        await verAsistencia();
 
     }
     catch(err){

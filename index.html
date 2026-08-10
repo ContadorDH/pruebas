@@ -5776,7 +5776,7 @@ async function verAsistencia(mes){
 
 
         // =========================================================
-        // SUPERADMIN VISUALIZANDO OTRA IGLESIA
+        // SUPERADMIN: IGLESIA SELECCIONADA
         // =========================================================
 
         if(
@@ -5785,7 +5785,7 @@ async function verAsistencia(mes){
         ){
 
             console.log(
-                "🏛️ Superadmin consultando:",
+                "🏛️ Consultando asistencia de:",
                 App.iglesiaVisualizada.id
             );
 
@@ -5802,33 +5802,21 @@ async function verAsistencia(mes){
             error = resultado.error;
 
 
-            // =====================================================
-            // ADAPTAR RESULTADO DE LA RPC
-            //
-            // La RPC devuelve:
-            // usuario_nombre
-            //
-            // La interfaz original utiliza:
-            // r.perfiles.nombre
-            //
-            // Así NO tocamos el diseño original.
-            // =====================================================
-
+            // La RPC devuelve usuario_nombre.
+            // Lo convertimos al mismo formato que
+            // utilizaba la consulta original.
             if(!error && Array.isArray(data)){
 
-                data = data.map(r => {
+                data = data.map(r => ({
+                    ...r,
 
-                    return {
-                        ...r,
+                    perfiles: {
+                        nombre:
+                            r.usuario_nombre ||
+                            "Sin nombre"
+                    }
 
-                        perfiles: {
-                            nombre:
-                                r.usuario_nombre ||
-                                "Sin nombre"
-                        }
-                    };
-
-                });
+                }));
 
             }
 
@@ -5836,14 +5824,10 @@ async function verAsistencia(mes){
 
 
         // =========================================================
-        // USUARIO NORMAL
+        // USUARIO NORMAL: CONSULTA ORIGINAL
         // =========================================================
 
         else{
-
-            console.log(
-                "👤 Consultando asistencia de la iglesia propia."
-            );
 
             const resultado =
                 await supabase
@@ -5857,7 +5841,7 @@ async function verAsistencia(mes){
                     .order(
                         "fecha",
                         {
-                            ascending: false
+                            ascending:false
                         }
                     );
 
@@ -5867,10 +5851,7 @@ async function verAsistencia(mes){
         }
 
 
-        console.log(
-            "Datos recibidos:",
-            data
-        );
+        console.log(data);
 
 
         // =========================================================
@@ -5895,21 +5876,16 @@ async function verAsistencia(mes){
         // FILTRAR POR MES
         // =========================================================
 
-        const filas = data.filter(r => {
+        const filas = data.filter(r=>{
 
-            const fecha =
-                new Date(r.fecha);
+            const fecha = new Date(r.fecha);
 
             return meses[fecha.getMonth()] === mes;
 
         });
 
 
-        // =========================================================
-        // SIN REGISTROS
-        // =========================================================
-
-        if(filas.length === 0){
+        if(filas.length===0){
 
             listado.innerHTML =
                 `<div class="row">
@@ -5922,12 +5898,13 @@ async function verAsistencia(mes){
 
 
         // =========================================================
-        // MOSTRAR REGISTROS
+        // MOSTRAR ASISTENCIA
         //
-        // ⚠️ ESTE BLOQUE CONSERVA EL DISEÑO ORIGINAL
+        // ESTE BLOQUE ES EL ORIGINAL.
+        // NO CAMBIAMOS SU ESTRUCTURA.
         // =========================================================
 
-        listado.innerHTML = filas.map(r => {
+        listado.innerHTML = filas.map(r=>{
 
             const fecha =
                 new Date(r.fecha)
@@ -5946,7 +5923,6 @@ async function verAsistencia(mes){
             const fechaEsc =
                 escapeHTML(fecha);
 
-
             return `
 
 👤 ${usuarioEsc}
@@ -5959,7 +5935,7 @@ title="Compartir"
 
 onclick="compartirRegistro(
 
-'${encodeURIComponent(r.usuario || "")}',
+'${encodeURIComponent(r.usuario)}',
 
 '${encodeURIComponent(fecha)}',
 
@@ -6001,16 +5977,17 @@ box-shadow:0 4px 10px rgba(0,0,0,.25);
 ${r.total}
 
 ${
-    esPropio
-    ?
+esPropio
+?
 
-    `
-    🗑️ Eliminar
-    `
+`
+🗑️ Eliminar
+`
 
-    :
+:
 
-    ""
+""
+
 }
 
 `;

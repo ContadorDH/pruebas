@@ -372,14 +372,19 @@ header > button {
 .card {
   width: 95%;
   max-width: 440px;
-  background: var(--card);
-  border-radius: var(--radius);
+  background: var(--card) !important;
+  border-radius: var(--radius) !important;
   padding: 2px 0;
-  box-shadow: 0 2px 6px var(--shadow);
+  border: 1px solid var(--shadow);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 6px 16px -6px var(--shadow-dark),
+    0 2px 6px var(--shadow) !important;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2px;
+  transition: box-shadow 0.2s ease;
 }
 
 /* Ajustar tamaño de etiquetas (solo "Hermanos", "Hermanas", etc.) */
@@ -400,81 +405,127 @@ header > button {
   gap: 108px;
 }
 
-/* Aumentar tamaño de los botones de contador con efectos restaurados */
+/* === Botones de contador: look premium, sólido y moderno === */
 .counterBtn {
-  width: 18vw; /* Aumentado de 15vw para hacer los iconos más grandes (aprox. 72px en 360px de ancho) */
-  height: 18vw; /* Aumentado para mantener proporción circular */
-  max-width: 70px; /* Aumentado de 56px para permitir mayor tamaño en pantallas grandes */
-  max-height: 70px; /* Aumentado para mantener proporción */
+  position: relative;
+  width: 18vw;
+  height: 18vw;
+  max-width: 70px;
+  max-height: 70px;
   border-radius: 50%;
-  border: none;
-  color: #fff;
-  font-size: 35px; /* Aumentado de 28px para que los iconos sean más grandes */
+  color: #fff !important;
+  font-size: 35px;
+  font-weight: 400;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 2px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.35),
+    inset 0 -10px 14px rgba(0, 0, 0, 0.14),
+    0 10px 20px -6px rgba(0, 0, 0, 0.32),
+    0 3px 8px rgba(0, 0, 0, 0.18) !important;
+  transition: transform 0.22s cubic-bezier(.34,1.56,.64,1), box-shadow 0.22s ease, filter 0.18s ease;
   outline: none;
   -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
+  isolation: isolate;
 }
 
+.counterBtn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0) 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.counterBtn span, .counterBtn { z-index: 1; }
+
 .counterBtn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25), 0 3px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px) scale(1.045);
+  filter: brightness(1.05);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.4),
+    inset 0 -10px 14px rgba(0, 0, 0, 0.14),
+    0 14px 26px -6px rgba(0, 0, 0, 0.36),
+    0 4px 10px rgba(0, 0, 0, 0.2) !important;
 }
 
 .counterBtn:active {
-  transform: translateY(1px);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transform: translateY(1px) scale(0.94);
+  filter: brightness(0.94);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.25),
+    0 3px 8px rgba(0, 0, 0, 0.22) !important;
 }
 
 .counterBtn.minus {
-  background: var(--button-minus);
+  background: var(--button-minus) !important;
 }
 
 .counterBtn.plus {
-  background: var(--button-plus);
+  background: var(--button-plus) !important;
 }
 
 .counterBtn.ghost {
-  background: transparent;
-  color: var(--muted);
-  border: 1px solid var(--muted);
+  background: var(--card) !important;
+  color: var(--muted) !important;
+  border: 1px solid var(--shadow) !important;
   width: 50px;
   height: 50px;
   border-radius: 50%;
   font-size: 24px;
-  box-shadow: none;
+  box-shadow: 0 2px 6px var(--shadow) !important;
   outline: none;
   -webkit-tap-highlight-color: transparent;
 }
 
+.counterBtn.ghost::before { display: none; }
+
 .counterBtn.ghost:hover {
-  transform: none;
-  box-shadow: none;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px var(--shadow) !important;
 }
 
-/* Ajustar el valor del contador */
+/* Ajustar el valor del contador: display tipo "odómetro" elegante */
 .value {
-  min-width: 44px;
+  min-width: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   font-weight: 700;
   font-size: 1.2rem;
   color: var(--text);
+  font-variant-numeric: tabular-nums;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 4px 6px;
+  box-shadow:
+    inset 0 1px 3px rgba(0, 0, 0, 0.10),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-/* Ajustar la tarjeta de total */
+/* Ajustar la tarjeta de total: acabado sólido y elegante */
 .totalCard {
   width: 95%;
   max-width: 440px;
-  background: var(--card);
+  background: var(--card) !important;
   border-radius: var(--radius);
   padding: 6px 8px;
   text-align: center;
   font-weight: 700;
-  box-shadow: 0 4px 12px var(--shadow-dark);
+  letter-spacing: 0.2px;
+  border: 1px solid var(--shadow);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 10px 24px -8px var(--shadow-dark),
+    0 2px 8px var(--shadow);
   font-size: 1.1rem;
   color: var(--text);
   margin: 2px 0;
@@ -483,8 +534,12 @@ header > button {
 .totalCard #total {
   font-size: 2.5rem;
   font-weight: 800;
-  color: var(--primary);
   line-height: 1.2;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.5px;
 }
 
 /* Asegurar que el contenedor principal use todo el espacio */
@@ -1969,462 +2024,7 @@ ADMINISTRAR USUARIOS
 
 
 
-/* =========================================================
-   🎨 DISEÑO PROFESIONAL DE BOTONES
-   SOLO CAMBIA APARIENCIA
-   NO MODIFICA FUNCIONES NI ESTRUCTURA
-========================================================= */
 
-
-/* =========================================================
-   🔵 REGLA BASE
-========================================================= */
-
-button {
-    font-family: inherit;
-    font-weight: 700;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-
-    transition:
-        transform .16s ease,
-        box-shadow .16s ease,
-        filter .16s ease,
-        background .16s ease,
-        border-color .16s ease !important;
-}
-
-
-/* =========================================================
-   ➕➖ CONTADORES
-========================================================= */
-
-.counterBtn {
-    position: relative;
-
-    border: 2px solid rgba(255,255,255,.28) !important;
-
-    box-shadow:
-        0 5px 12px rgba(0,0,0,.20),
-        inset 0 1px 0 rgba(255,255,255,.30),
-        inset 0 -2px 4px rgba(0,0,0,.10) !important;
-
-    font-weight: 800 !important;
-
-    text-shadow:
-        0 1px 2px rgba(0,0,0,.25);
-}
-
-
-/* PLUS */
-
-.counterBtn.plus {
-    background:
-        linear-gradient(
-            145deg,
-            #5aa0ff 0%,
-            #0066ff 55%,
-            #004ecc 100%
-        ) !important;
-}
-
-
-/* MENOS */
-
-.counterBtn.minus {
-    background:
-        linear-gradient(
-            145deg,
-            #ef7d7d 0%,
-            #d93636 55%,
-            #a91515 100%
-        ) !important;
-}
-
-
-/* brillo superior */
-
-.counterBtn::before {
-    content: "";
-
-    position: absolute;
-
-    left: 4px;
-    right: 4px;
-    top: 3px;
-
-    height: 38%;
-
-    border-radius: 50%;
-
-    background:
-        linear-gradient(
-            to bottom,
-            rgba(255,255,255,.22),
-            rgba(255,255,255,0)
-        );
-
-    pointer-events: none;
-}
-
-
-/* hover */
-
-.counterBtn:hover {
-    transform: translateY(-2px) scale(1.04) !important;
-
-    box-shadow:
-        0 8px 18px rgba(0,0,0,.25),
-        inset 0 1px 0 rgba(255,255,255,.34),
-        inset 0 -2px 5px rgba(0,0,0,.10) !important;
-
-    filter: brightness(1.05);
-}
-
-
-/* click */
-
-.counterBtn:active {
-    transform: scale(.91) !important;
-
-    box-shadow:
-        0 3px 7px rgba(0,0,0,.22),
-        inset 0 3px 6px rgba(0,0,0,.16) !important;
-
-    filter: brightness(.97);
-}
-
-
-/* =========================================================
-   ⬆️ SUBIR ASISTENCIA
-========================================================= */
-
-#btn-subir {
-
-    border: 1px solid rgba(255,255,255,.20) !important;
-
-    background:
-        linear-gradient(
-            180deg,
-            #1677ff 0%,
-            #0066ff 52%,
-            #004ecc 100%
-        ) !important;
-
-    color: #fff !important;
-
-    box-shadow:
-        0 6px 14px rgba(0,65,160,.25),
-        inset 0 1px 0 rgba(255,255,255,.22),
-        inset 0 -2px 4px rgba(0,0,0,.10) !important;
-
-    text-shadow:
-        0 1px 2px rgba(0,0,0,.22);
-
-    font-weight: 800 !important;
-}
-
-
-#btn-subir:hover {
-
-    transform: translateY(-2px) !important;
-
-    filter: brightness(1.05);
-
-    box-shadow:
-        0 9px 20px rgba(0,65,160,.30),
-        inset 0 1px 0 rgba(255,255,255,.26),
-        inset 0 -2px 4px rgba(0,0,0,.10) !important;
-}
-
-
-#btn-subir:active {
-
-    transform: translateY(1px) scale(.985) !important;
-
-    box-shadow:
-        0 3px 8px rgba(0,0,0,.22),
-        inset 0 3px 6px rgba(0,0,0,.14) !important;
-}
-
-
-/* =========================================================
-   📋 MENÚ LATERAL
-========================================================= */
-
-#menu .item {
-
-    border: 1px solid transparent !important;
-
-    border-radius: 10px !important;
-
-    box-shadow:
-        0 2px 5px rgba(0,0,0,.06) !important;
-
-    font-weight: 600 !important;
-}
-
-
-#menu .item:hover {
-
-    background: var(--primary) !important;
-
-    color: #fff !important;
-
-    border-color: rgba(255,255,255,.18) !important;
-
-    transform: translateX(2px) !important;
-
-    box-shadow:
-        0 5px 12px rgba(0,0,0,.15) !important;
-}
-
-
-#menu .item:active {
-
-    transform: scale(.97) !important;
-}
-
-
-/* =========================================================
-   🏛️ BOTONES DE IGLESIAS
-========================================================= */
-
-.accionesIglesia button {
-
-    background:
-        linear-gradient(
-            180deg,
-            var(--primary),
-            var(--primary-dark)
-        ) !important;
-
-    color: #fff !important;
-
-    border: 1px solid rgba(255,255,255,.18) !important;
-
-    border-radius: 10px !important;
-
-    box-shadow:
-        0 4px 10px rgba(0,0,0,.14),
-        inset 0 1px 0 rgba(255,255,255,.18) !important;
-
-    font-weight: 700 !important;
-}
-
-
-.accionesIglesia button:hover {
-
-    transform: translateY(-2px) !important;
-
-    filter: brightness(1.05);
-
-    box-shadow:
-        0 7px 15px rgba(0,0,0,.20),
-        inset 0 1px 0 rgba(255,255,255,.22) !important;
-}
-
-
-.accionesIglesia button:active {
-
-    transform: scale(.96) !important;
-}
-
-
-/* =========================================================
-   👤 BOTÓN EDITAR USUARIO
-========================================================= */
-
-.accionesUsuario button {
-
-    background:
-        linear-gradient(
-            180deg,
-            var(--primary),
-            var(--primary-dark)
-        ) !important;
-
-    color: #fff !important;
-
-    border: 1px solid rgba(255,255,255,.18) !important;
-
-    border-radius: 10px !important;
-
-    box-shadow:
-        0 4px 10px rgba(0,0,0,.14),
-        inset 0 1px 0 rgba(255,255,255,.18) !important;
-}
-
-
-.accionesUsuario button:hover {
-
-    transform: translateY(-2px) !important;
-
-    filter: brightness(1.05);
-
-    box-shadow:
-        0 7px 15px rgba(0,0,0,.20) !important;
-}
-
-
-.accionesUsuario button:active {
-
-    transform: scale(.96) !important;
-}
-
-
-/* =========================================================
-   💾 GUARDAR USUARIO
-========================================================= */
-
-#btnGuardarUsuario {
-
-    background:
-        linear-gradient(
-            180deg,
-            var(--primary),
-            var(--primary-dark)
-        ) !important;
-
-    color: #fff !important;
-
-    border: 1px solid rgba(255,255,255,.18) !important;
-
-    border-radius: 10px !important;
-
-    box-shadow:
-        0 5px 12px rgba(0,0,0,.15),
-        inset 0 1px 0 rgba(255,255,255,.18) !important;
-}
-
-
-#btnGuardarUsuario:hover {
-
-    transform: translateY(-2px) !important;
-
-    filter: brightness(1.05);
-
-    box-shadow:
-        0 8px 17px rgba(0,0,0,.20) !important;
-}
-
-
-/* =========================================================
-   🔔 POPUPS
-========================================================= */
-
-#popupConfirm button,
-#popupAlert button,
-#popupUsuario button {
-
-    border-radius: 10px !important;
-
-    border: 1px solid rgba(255,255,255,.18) !important;
-
-    box-shadow:
-        0 4px 10px rgba(0,0,0,.14),
-        inset 0 1px 0 rgba(255,255,255,.18) !important;
-
-    font-weight: 700 !important;
-}
-
-
-#popupConfirm button:hover,
-#popupAlert button:hover,
-#popupUsuario button:hover {
-
-    transform: translateY(-1px) !important;
-
-    filter: brightness(1.05);
-
-    box-shadow:
-        0 7px 15px rgba(0,0,0,.18) !important;
-}
-
-
-#popupConfirm button:active,
-#popupAlert button:active,
-#popupUsuario button:active {
-
-    transform: scale(.96) !important;
-}
-
-
-/* =========================================================
-   📲 INSTALAR
-========================================================= */
-
-#installBtn {
-
-    border: 1px solid rgba(255,255,255,.30) !important;
-
-    box-shadow:
-        0 4px 10px rgba(0,0,0,.16),
-        inset 0 1px 0 rgba(255,255,255,.22) !important;
-
-    font-weight: 700 !important;
-}
-
-
-#installBtn:hover {
-
-    transform: translateY(-1px) scale(1.02) !important;
-
-    box-shadow:
-        0 7px 15px rgba(0,0,0,.22),
-        inset 0 1px 0 rgba(255,255,255,.25) !important;
-}
-
-
-#installBtn:active {
-
-    transform: scale(.95) !important;
-}
-
-
-/* =========================================================
-   👤 CÍRCULO USUARIO
-========================================================= */
-
-#userCircle {
-
-    box-shadow:
-        0 4px 10px rgba(0,0,0,.18),
-        inset 0 1px 0 rgba(255,255,255,.22) !important;
-
-    transition:
-        transform .16s ease,
-        box-shadow .16s ease,
-        background .16s ease !important;
-}
-
-
-#userCircle:hover {
-
-    transform: scale(1.05) !important;
-
-    box-shadow:
-        0 7px 15px rgba(0,0,0,.22),
-        inset 0 1px 0 rgba(255,255,255,.25) !important;
-}
-
-
-#userCircle:active {
-
-    transform: scale(.93) !important;
-}
-
-
-/* =========================================================
-   ♿ FOCO
-========================================================= */
-
-button:focus-visible {
-
-    outline: 2px solid var(--primary) !important;
-
-    outline-offset: 2px;
-}
 
 
   </style>

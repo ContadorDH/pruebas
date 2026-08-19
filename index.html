@@ -954,11 +954,19 @@ body {
     justify-content:center;
     align-items:center;
     z-index:20000;
+    padding:20px;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
 }
 
 .modalCard{
 
     width:min(92vw,460px);
+
+    max-height:90vh;
+    max-height:calc(var(--app-height, 100dvh) * 0.9);
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
 
     background:var(--card);
 
@@ -990,6 +998,45 @@ body {
 
     margin-bottom:18px;
 
+}
+
+.passwordField{
+    position:relative;
+}
+
+.passwordField input{
+    padding-right:44px;
+}
+
+.passwordField .togglePassword{
+    position:absolute;
+    top:0;
+    right:0;
+    bottom:0;
+    width:40px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:none;
+    border:0;
+    cursor:pointer;
+    color:var(--muted);
+    font-size:18px;
+    padding:0;
+}
+
+.passwordField .togglePassword:hover{
+    color:var(--text);
+}
+
+/* El input de contraseña del login tiene ancho fijo (220px),
+   así que el wrapper del ojito debe respetar ese mismo ancho. */
+#loginBox .passwordField{
+    display:inline-block;
+    width:220px;
+}
+#loginBox .passwordField input{
+    width:100%;
 }
 
 .modalCard input,
@@ -2086,12 +2133,21 @@ ADMINISTRAR USUARIOS
 
     <br><br>
 
+    <div class="passwordField">
     <input
       type="password"
       id="loginPassword"
       placeholder="Contraseña"
       autocomplete="current-password"
     >
+    <button
+      type="button"
+      class="togglePassword"
+      aria-label="Mostrar contraseña"
+      onclick="togglePasswordVisibility('loginPassword', this)">
+      <i class="fa-solid fa-eye"></i>
+    </button>
+    </div>
 
     <br><br>
 
@@ -2184,15 +2240,33 @@ placeholder="Ejemplo: BOCHICA2026">
 Solicita esta clave al administrador de tu iglesia.
 </small>
 
+<div class="passwordField">
 <input
 id="regPassword"
 type="password"
 placeholder="Contraseña">
+<button
+type="button"
+class="togglePassword"
+aria-label="Mostrar contraseña"
+onclick="togglePasswordVisibility('regPassword', this)">
+<i class="fa-solid fa-eye"></i>
+</button>
+</div>
 
+<div class="passwordField">
 <input
 id="regPassword2"
 type="password"
 placeholder="Confirmar contraseña">
+<button
+type="button"
+class="togglePassword"
+aria-label="Mostrar contraseña"
+onclick="togglePasswordVisibility('regPassword2', this)">
+<i class="fa-solid fa-eye"></i>
+</button>
+</div>
 
 <div
 style="display:flex;gap:12px;margin-top:20px;">
@@ -2298,18 +2372,35 @@ Cancelar
 
         </p>
 
+        <div class="passwordField">
         <input
             id="nuevaPassword1"
             type="password"
             placeholder="Nueva contraseña"
             autocomplete="new-password">
+        <button
+            type="button"
+            class="togglePassword"
+            aria-label="Mostrar contraseña"
+            onclick="togglePasswordVisibility('nuevaPassword1', this)">
+            <i class="fa-solid fa-eye"></i>
+        </button>
+        </div>
 
+        <div class="passwordField" style="margin-top:12px;">
         <input
             id="nuevaPassword2"
             type="password"
             placeholder="Confirmar contraseña"
-            autocomplete="new-password"
-            style="margin-top:12px;">
+            autocomplete="new-password">
+        <button
+            type="button"
+            class="togglePassword"
+            aria-label="Mostrar contraseña"
+            onclick="togglePasswordVisibility('nuevaPassword2', this)">
+            <i class="fa-solid fa-eye"></i>
+        </button>
+        </div>
 
         <div style="
             display:flex;
@@ -2351,8 +2442,17 @@ Cancelar
 
     <div style="height:10px"></div>
 
+    <div class="passwordField">
     <input id="pinIglesia" type="password" placeholder="Código de invitación"
-      style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--muted);font-size:1rem;background:var(--card);color:var(--text);" />
+      style="width:100%;padding:10px;padding-right:44px;border-radius:8px;border:1px solid var(--muted);font-size:1rem;background:var(--card);color:var(--text);" />
+    <button
+      type="button"
+      class="togglePassword"
+      aria-label="Mostrar contraseña"
+      onclick="togglePasswordVisibility('pinIglesia', this)">
+      <i class="fa-solid fa-eye"></i>
+    </button>
+    </div>
 
  <button id="btnLoginIglesia" onclick="loginIglesia()"
   style="margin-top:12px;background:var(--primary);color:#fff;border:0;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:600;width:100%;">
@@ -2805,10 +2905,19 @@ style="
             Por seguridad, verifica el nuevo código de registro para continuar.
         </p>
 
+        <div class="passwordField">
         <input
             id="codigoRegistroVerificar"
             type="password"
             placeholder="Código de registro">
+        <button
+            type="button"
+            class="togglePassword"
+            aria-label="Mostrar contraseña"
+            onclick="togglePasswordVisibility('codigoRegistroVerificar', this)">
+            <i class="fa-solid fa-eye"></i>
+        </button>
+        </div>
 
 
             
@@ -5248,7 +5357,13 @@ async function cerrarSesion(){
 
                 // Respaldo extra: borrar a mano cualquier token de
                 // Supabase que haya quedado en localStorage.
-         
+                try{
+                    Object.keys(localStorage)
+                        .filter(k => k.startsWith("sb-"))
+                        .forEach(k => localStorage.removeItem(k));
+                }catch(e){
+                    console.error("No se pudo limpiar localStorage:", e);
+                }
 
                 // Limpiar objeto global
                 App.session = null;
@@ -5394,6 +5509,37 @@ function cerrarRegistro(){
     document
         .getElementById("registroScreen")
         .classList.add("oculto");
+
+}
+
+function togglePasswordVisibility(inputId, btn){
+
+    const input = document.getElementById(inputId);
+
+    if(!input) return;
+
+    const icon = btn.querySelector("i");
+
+    if(input.type === "password"){
+
+        input.type = "text";
+
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+
+        btn.setAttribute("aria-label", "Ocultar contraseña");
+
+    }
+    else{
+
+        input.type = "password";
+
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+
+        btn.setAttribute("aria-label", "Mostrar contraseña");
+
+    }
 
 }
 

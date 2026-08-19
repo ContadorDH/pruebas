@@ -1970,536 +1970,460 @@ ADMINISTRAR USUARIOS
 
 
 /* =========================================================
-   🎨 BOTONES PROFESIONALES — SOLO DISEÑO
-   No modifica HTML ni JavaScript
+   🎨 DISEÑO PROFESIONAL DE BOTONES
+   SOLO CAMBIA APARIENCIA
+   NO MODIFICA FUNCIONES NI ESTRUCTURA
 ========================================================= */
 
-/* ---------------------------------------------------------
-   ESTILO GENERAL DE BOTONES
---------------------------------------------------------- */
+
+/* =========================================================
+   🔵 REGLA BASE
+========================================================= */
 
 button {
-  font-family: inherit;
-  -webkit-tap-highlight-color: transparent;
-}
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
 
-/* ---------------------------------------------------------
-   🔵 BOTONES PRINCIPALES
---------------------------------------------------------- */
-
-#btn-subir,
-#btnLogin,
-.btnPrincipal,
-#btnGuardarUsuario {
-  position: relative;
-  border: 1px solid rgba(255,255,255,.12) !important;
-
-  background:
-    linear-gradient(
-      180deg,
-      var(--primary) 0%,
-      var(--primary-dark) 100%
-    ) !important;
-
-  color: #fff !important;
-
-  box-shadow:
-    0 5px 12px rgba(0,0,0,.14),
-    inset 0 1px 0 rgba(255,255,255,.16) !important;
-
-  transition:
-    transform .18s ease,
-    box-shadow .18s ease,
-    filter .18s ease !important;
-
-  font-weight: 700 !important;
-}
-
-#btn-subir:hover,
-#btnLogin:hover,
-.btnPrincipal:hover,
-#btnGuardarUsuario:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.04);
-
-  box-shadow:
-    0 7px 16px rgba(0,0,0,.18),
-    inset 0 1px 0 rgba(255,255,255,.18) !important;
-}
-
-#btn-subir:active,
-#btnLogin:active,
-.btnPrincipal:active,
-#btnGuardarUsuario:active {
-  transform: translateY(1px) scale(.985);
-
-  box-shadow:
-    0 3px 7px rgba(0,0,0,.16),
-    inset 0 2px 4px rgba(0,0,0,.10) !important;
+    transition:
+        transform .16s ease,
+        box-shadow .16s ease,
+        filter .16s ease,
+        background .16s ease,
+        border-color .16s ease !important;
 }
 
 
-/* ---------------------------------------------------------
-   🔘 BOTONES SECUNDARIOS
---------------------------------------------------------- */
-
-.secondary,
-.btnSecundario {
-  background: var(--card) !important;
-  color: var(--text) !important;
-
-  border: 1px solid rgba(100,110,130,.25) !important;
-
-  box-shadow:
-    0 3px 8px rgba(0,0,0,.08),
-    inset 0 1px 0 rgba(255,255,255,.65) !important;
-
-  transition:
-    transform .18s ease,
-    box-shadow .18s ease,
-    background .18s ease !important;
-
-  font-weight: 700 !important;
-}
-
-.secondary:hover,
-.btnSecundario:hover {
-  background: var(--bg) !important;
-  transform: translateY(-1px);
-
-  box-shadow:
-    0 5px 12px rgba(0,0,0,.12),
-    inset 0 1px 0 rgba(255,255,255,.7) !important;
-}
-
-.secondary:active,
-.btnSecundario:active {
-  transform: translateY(1px) scale(.985);
-}
-
-
-/* ---------------------------------------------------------
-   ➕➖ BOTONES DEL CONTADOR
---------------------------------------------------------- */
+/* =========================================================
+   ➕➖ CONTADORES
+========================================================= */
 
 .counterBtn {
-  position: relative;
+    position: relative;
 
-  border: 1px solid rgba(255,255,255,.20) !important;
+    border: 2px solid rgba(255,255,255,.28) !important;
 
-  box-shadow:
-    0 5px 12px rgba(0,0,0,.18),
-    inset 0 1px 0 rgba(255,255,255,.20),
-    inset 0 -2px 4px rgba(0,0,0,.08) !important;
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.20),
+        inset 0 1px 0 rgba(255,255,255,.30),
+        inset 0 -2px 4px rgba(0,0,0,.10) !important;
 
-  transition:
-    transform .16s ease,
-    box-shadow .16s ease,
-    filter .16s ease !important;
+    font-weight: 800 !important;
 
-  font-weight: 800 !important;
+    text-shadow:
+        0 1px 2px rgba(0,0,0,.25);
 }
 
-/* Brillo superior muy sutil */
+
+/* PLUS */
+
+.counterBtn.plus {
+    background:
+        linear-gradient(
+            145deg,
+            #5aa0ff 0%,
+            #0066ff 55%,
+            #004ecc 100%
+        ) !important;
+}
+
+
+/* MENOS */
+
+.counterBtn.minus {
+    background:
+        linear-gradient(
+            145deg,
+            #ef7d7d 0%,
+            #d93636 55%,
+            #a91515 100%
+        ) !important;
+}
+
+
+/* brillo superior */
+
 .counterBtn::before {
-  content: "";
-  position: absolute;
-  inset: 1px 1px 52% 1px;
-  border-radius: inherit;
-  background: linear-gradient(
-    to bottom,
-    rgba(255,255,255,.16),
-    rgba(255,255,255,0)
-  );
+    content: "";
 
-  pointer-events: none;
+    position: absolute;
+
+    left: 4px;
+    right: 4px;
+    top: 3px;
+
+    height: 38%;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(255,255,255,.22),
+            rgba(255,255,255,0)
+        );
+
+    pointer-events: none;
 }
 
-/* Hover */
+
+/* hover */
+
 .counterBtn:hover {
-  transform: translateY(-2px) !important;
-  filter: brightness(1.05);
+    transform: translateY(-2px) scale(1.04) !important;
 
-  box-shadow:
-    0 8px 17px rgba(0,0,0,.22),
-    inset 0 1px 0 rgba(255,255,255,.23),
-    inset 0 -2px 4px rgba(0,0,0,.08) !important;
+    box-shadow:
+        0 8px 18px rgba(0,0,0,.25),
+        inset 0 1px 0 rgba(255,255,255,.34),
+        inset 0 -2px 5px rgba(0,0,0,.10) !important;
+
+    filter: brightness(1.05);
 }
 
-/* Presionado */
+
+/* click */
+
 .counterBtn:active {
-  transform: translateY(1px) scale(.94) !important;
+    transform: scale(.91) !important;
 
-  box-shadow:
-    0 3px 7px rgba(0,0,0,.20),
-    inset 0 3px 6px rgba(0,0,0,.13) !important;
+    box-shadow:
+        0 3px 7px rgba(0,0,0,.22),
+        inset 0 3px 6px rgba(0,0,0,.16) !important;
 
-  filter: brightness(.98);
+    filter: brightness(.97);
 }
 
 
-/* ---------------------------------------------------------
-   👻 BOTÓN GHOST
---------------------------------------------------------- */
+/* =========================================================
+   ⬆️ SUBIR ASISTENCIA
+========================================================= */
 
-.counterBtn.ghost {
-  background: transparent !important;
+#btn-subir {
 
-  border: 1.5px solid var(--muted) !important;
+    border: 1px solid rgba(255,255,255,.20) !important;
 
-  box-shadow:
-    0 3px 8px rgba(0,0,0,.08) !important;
+    background:
+        linear-gradient(
+            180deg,
+            #1677ff 0%,
+            #0066ff 52%,
+            #004ecc 100%
+        ) !important;
 
-  transition:
-    transform .18s ease,
-    background .18s ease,
-    color .18s ease,
-    border-color .18s ease,
-    box-shadow .18s ease !important;
-}
+    color: #fff !important;
 
-.counterBtn.ghost:hover {
-  background: var(--primary) !important;
-  border-color: var(--primary) !important;
-  color: #fff !important;
+    box-shadow:
+        0 6px 14px rgba(0,65,160,.25),
+        inset 0 1px 0 rgba(255,255,255,.22),
+        inset 0 -2px 4px rgba(0,0,0,.10) !important;
 
-  transform: translateY(-1px) !important;
+    text-shadow:
+        0 1px 2px rgba(0,0,0,.22);
 
-  box-shadow:
-    0 5px 12px rgba(0,0,0,.15) !important;
-}
-
-.counterBtn.ghost:active {
-  transform: scale(.94) !important;
+    font-weight: 800 !important;
 }
 
 
-/* ---------------------------------------------------------
-   📋 BOTONES DEL MENÚ LATERAL
---------------------------------------------------------- */
+#btn-subir:hover {
+
+    transform: translateY(-2px) !important;
+
+    filter: brightness(1.05);
+
+    box-shadow:
+        0 9px 20px rgba(0,65,160,.30),
+        inset 0 1px 0 rgba(255,255,255,.26),
+        inset 0 -2px 4px rgba(0,0,0,.10) !important;
+}
+
+
+#btn-subir:active {
+
+    transform: translateY(1px) scale(.985) !important;
+
+    box-shadow:
+        0 3px 8px rgba(0,0,0,.22),
+        inset 0 3px 6px rgba(0,0,0,.14) !important;
+}
+
+
+/* =========================================================
+   📋 MENÚ LATERAL
+========================================================= */
 
 #menu .item {
-  border: 1px solid transparent;
 
-  box-shadow: none;
+    border: 1px solid transparent !important;
 
-  transition:
-    background .18s ease,
-    color .18s ease,
-    transform .18s ease,
-    border-color .18s ease,
-    box-shadow .18s ease !important;
+    border-radius: 10px !important;
+
+    box-shadow:
+        0 2px 5px rgba(0,0,0,.06) !important;
+
+    font-weight: 600 !important;
 }
 
-#menu .item:hover,
-#menu .item:focus {
-  border-color: rgba(255,255,255,.12);
 
-  box-shadow:
-    0 4px 10px rgba(0,0,0,.08);
+#menu .item:hover {
 
-  transform: translateX(2px);
+    background: var(--primary) !important;
+
+    color: #fff !important;
+
+    border-color: rgba(255,255,255,.18) !important;
+
+    transform: translateX(2px) !important;
+
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.15) !important;
 }
+
 
 #menu .item:active {
-  transform: translateX(1px) scale(.985) !important;
+
+    transform: scale(.97) !important;
 }
 
 
-/* ---------------------------------------------------------
-   👁️ BOTONES DEL ENCABEZADO DE ASISTENCIA
---------------------------------------------------------- */
+/* =========================================================
+   🏛️ BOTONES DE IGLESIAS
+========================================================= */
 
-#verHeader .left button,
-#verHeader button:not(.left button) {
-  transition:
-    transform .18s ease,
-    box-shadow .18s ease,
-    background .18s ease,
-    filter .18s ease !important;
+.accionesIglesia button {
+
+    background:
+        linear-gradient(
+            180deg,
+            var(--primary),
+            var(--primary-dark)
+        ) !important;
+
+    color: #fff !important;
+
+    border: 1px solid rgba(255,255,255,.18) !important;
+
+    border-radius: 10px !important;
+
+    box-shadow:
+        0 4px 10px rgba(0,0,0,.14),
+        inset 0 1px 0 rgba(255,255,255,.18) !important;
+
+    font-weight: 700 !important;
 }
 
-#verHeader .left button:hover,
-#verHeader button:not(.left button):hover {
-  transform: translateY(-1px);
-  filter: brightness(1.05);
+
+.accionesIglesia button:hover {
+
+    transform: translateY(-2px) !important;
+
+    filter: brightness(1.05);
+
+    box-shadow:
+        0 7px 15px rgba(0,0,0,.20),
+        inset 0 1px 0 rgba(255,255,255,.22) !important;
 }
 
-#verHeader .left button:active,
-#verHeader button:not(.left button):active {
-  transform: scale(.94);
+
+.accionesIglesia button:active {
+
+    transform: scale(.96) !important;
 }
 
 
-/* ---------------------------------------------------------
-   🏛️ BOTONES DE ADMINISTRACIÓN
---------------------------------------------------------- */
+/* =========================================================
+   👤 BOTÓN EDITAR USUARIO
+========================================================= */
 
-.accionesIglesia button,
 .accionesUsuario button {
-  border: 1px solid rgba(100,110,130,.18) !important;
 
-  background:
-    linear-gradient(
-      180deg,
-      var(--primary) 0%,
-      var(--primary-dark) 100%
-    ) !important;
+    background:
+        linear-gradient(
+            180deg,
+            var(--primary),
+            var(--primary-dark)
+        ) !important;
 
-  color: #fff !important;
+    color: #fff !important;
 
-  border-radius: 10px !important;
+    border: 1px solid rgba(255,255,255,.18) !important;
 
-  box-shadow:
-    0 4px 10px rgba(0,0,0,.13),
-    inset 0 1px 0 rgba(255,255,255,.15) !important;
+    border-radius: 10px !important;
 
-  transition:
-    transform .18s ease,
-    box-shadow .18s ease,
-    filter .18s ease !important;
+    box-shadow:
+        0 4px 10px rgba(0,0,0,.14),
+        inset 0 1px 0 rgba(255,255,255,.18) !important;
 }
 
-.accionesIglesia button:hover,
+
 .accionesUsuario button:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.05);
 
-  box-shadow:
-    0 6px 14px rgba(0,0,0,.18),
-    inset 0 1px 0 rgba(255,255,255,.18) !important;
+    transform: translateY(-2px) !important;
+
+    filter: brightness(1.05);
+
+    box-shadow:
+        0 7px 15px rgba(0,0,0,.20) !important;
 }
 
-.accionesIglesia button:active,
+
 .accionesUsuario button:active {
-  transform: scale(.97);
 
-  box-shadow:
-    0 3px 7px rgba(0,0,0,.16) !important;
+    transform: scale(.96) !important;
 }
 
 
-/* ---------------------------------------------------------
-   💾 BOTONES DE MODALES
---------------------------------------------------------- */
+/* =========================================================
+   💾 GUARDAR USUARIO
+========================================================= */
+
+#btnGuardarUsuario {
+
+    background:
+        linear-gradient(
+            180deg,
+            var(--primary),
+            var(--primary-dark)
+        ) !important;
+
+    color: #fff !important;
+
+    border: 1px solid rgba(255,255,255,.18) !important;
+
+    border-radius: 10px !important;
+
+    box-shadow:
+        0 5px 12px rgba(0,0,0,.15),
+        inset 0 1px 0 rgba(255,255,255,.18) !important;
+}
+
+
+#btnGuardarUsuario:hover {
+
+    transform: translateY(-2px) !important;
+
+    filter: brightness(1.05);
+
+    box-shadow:
+        0 8px 17px rgba(0,0,0,.20) !important;
+}
+
+
+/* =========================================================
+   🔔 POPUPS
+========================================================= */
 
 #popupConfirm button,
 #popupAlert button,
-#popupUsuario button,
-.modalCard button {
-  border: 1px solid rgba(255,255,255,.12) !important;
+#popupUsuario button {
 
-  box-shadow:
-    0 4px 10px rgba(0,0,0,.12),
-    inset 0 1px 0 rgba(255,255,255,.16) !important;
+    border-radius: 10px !important;
 
-  transition:
-    transform .18s ease,
-    box-shadow .18s ease,
-    filter .18s ease !important;
+    border: 1px solid rgba(255,255,255,.18) !important;
 
-  font-weight: 700 !important;
+    box-shadow:
+        0 4px 10px rgba(0,0,0,.14),
+        inset 0 1px 0 rgba(255,255,255,.18) !important;
+
+    font-weight: 700 !important;
 }
+
 
 #popupConfirm button:hover,
 #popupAlert button:hover,
-#popupUsuario button:hover,
-.modalCard button:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.04);
+#popupUsuario button:hover {
 
-  box-shadow:
-    0 6px 14px rgba(0,0,0,.17),
-    inset 0 1px 0 rgba(255,255,255,.18) !important;
+    transform: translateY(-1px) !important;
+
+    filter: brightness(1.05);
+
+    box-shadow:
+        0 7px 15px rgba(0,0,0,.18) !important;
 }
+
 
 #popupConfirm button:active,
 #popupAlert button:active,
-#popupUsuario button:active,
-.modalCard button:active {
-  transform: scale(.97);
+#popupUsuario button:active {
+
+    transform: scale(.96) !important;
 }
 
 
-/* ---------------------------------------------------------
-   🔐 BOTÓN OJO DE CONTRASEÑA
---------------------------------------------------------- */
-
-.passwordField .togglePassword {
-  border: 0 !important;
-  box-shadow: none !important;
-  background: transparent !important;
-  color: var(--muted) !important;
-  transition:
-    color .18s ease,
-    transform .18s ease !important;
-}
-
-.passwordField .togglePassword:hover {
-  color: var(--primary) !important;
-  transform: scale(1.08);
-}
-
-
-/* ---------------------------------------------------------
-   📤 BOTÓN COMPARTIR
---------------------------------------------------------- */
-
-#listado .row button[title="Compartir"] {
-  border: 1px solid rgba(255,255,255,.18) !important;
-
-  box-shadow:
-    0 5px 12px rgba(0,0,0,.18),
-    inset 0 1px 0 rgba(255,255,255,.18) !important;
-
-  transition:
-    transform .18s ease,
-    box-shadow .18s ease,
-    filter .18s ease !important;
-}
-
-#listado .row button[title="Compartir"]:hover {
-  transform: translateY(-2px) !important;
-  filter: brightness(1.06);
-
-  box-shadow:
-    0 7px 15px rgba(0,0,0,.22),
-    inset 0 1px 0 rgba(255,255,255,.20) !important;
-}
-
-#listado .row button[title="Compartir"]:active {
-  transform: scale(.92) !important;
-}
-
-
-/* ---------------------------------------------------------
-   🗑️ BOTÓN ELIMINAR
---------------------------------------------------------- */
-
-#listado .row button[onclick^="eliminarAsistencia"] {
-  border: 1px solid rgba(255,255,255,.15) !important;
-
-  box-shadow:
-    0 4px 9px rgba(0,0,0,.14),
-    inset 0 1px 0 rgba(255,255,255,.12) !important;
-
-  transition:
-    transform .18s ease,
-    box-shadow .18s ease,
-    filter .18s ease !important;
-}
-
-#listado .row button[onclick^="eliminarAsistencia"]:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.05);
-
-  box-shadow:
-    0 6px 13px rgba(0,0,0,.20),
-    inset 0 1px 0 rgba(255,255,255,.14) !important;
-}
-
-#listado .row button[onclick^="eliminarAsistencia"]:active {
-  transform: scale(.96);
-}
-
-
-/* ---------------------------------------------------------
-   👤 CÍRCULO DE USUARIO
---------------------------------------------------------- */
-
-#userCircle {
-  box-shadow:
-    0 3px 9px rgba(0,0,0,.16),
-    inset 0 1px 0 rgba(255,255,255,.20);
-
-  transition:
-    transform .18s ease,
-    background .18s ease,
-    box-shadow .18s ease !important;
-}
-
-#userCircle:hover {
-  transform: translateY(-1px) scale(1.04);
-
-  background: rgba(255,255,255,.27);
-
-  box-shadow:
-    0 5px 13px rgba(0,0,0,.20),
-    inset 0 1px 0 rgba(255,255,255,.25);
-}
-
-#userCircle:active {
-  transform: scale(.94);
-}
-
-
-/* ---------------------------------------------------------
-   📲 BOTÓN INSTALAR
---------------------------------------------------------- */
+/* =========================================================
+   📲 INSTALAR
+========================================================= */
 
 #installBtn {
-  border: 1px solid rgba(255,255,255,.30) !important;
 
-  box-shadow:
-    0 4px 10px rgba(0,0,0,.14),
-    inset 0 1px 0 rgba(255,255,255,.18) !important;
+    border: 1px solid rgba(255,255,255,.30) !important;
 
-  transition:
-    transform .18s ease,
-    background .18s ease,
-    box-shadow .18s ease !important;
+    box-shadow:
+        0 4px 10px rgba(0,0,0,.16),
+        inset 0 1px 0 rgba(255,255,255,.22) !important;
+
+    font-weight: 700 !important;
 }
+
 
 #installBtn:hover {
-  transform: translateY(-1px) scale(1.01);
 
-  background: rgba(255,255,255,.28) !important;
+    transform: translateY(-1px) scale(1.02) !important;
 
-  box-shadow:
-    0 6px 14px rgba(0,0,0,.18),
-    inset 0 1px 0 rgba(255,255,255,.22) !important;
+    box-shadow:
+        0 7px 15px rgba(0,0,0,.22),
+        inset 0 1px 0 rgba(255,255,255,.25) !important;
 }
+
 
 #installBtn:active {
-  transform: scale(.97);
+
+    transform: scale(.95) !important;
 }
 
 
-/* ---------------------------------------------------------
-   ♿ ACCESIBILIDAD — FOCO PROFESIONAL
---------------------------------------------------------- */
+/* =========================================================
+   👤 CÍRCULO USUARIO
+========================================================= */
+
+#userCircle {
+
+    box-shadow:
+        0 4px 10px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.22) !important;
+
+    transition:
+        transform .16s ease,
+        box-shadow .16s ease,
+        background .16s ease !important;
+}
+
+
+#userCircle:hover {
+
+    transform: scale(1.05) !important;
+
+    box-shadow:
+        0 7px 15px rgba(0,0,0,.22),
+        inset 0 1px 0 rgba(255,255,255,.25) !important;
+}
+
+
+#userCircle:active {
+
+    transform: scale(.93) !important;
+}
+
+
+/* =========================================================
+   ♿ FOCO
+========================================================= */
 
 button:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 3px;
-}
 
+    outline: 2px solid var(--primary) !important;
 
-/* ---------------------------------------------------------
-   📱 EN DISPOSITIVOS TÁCTILES
---------------------------------------------------------- */
-
-@media (hover:none) {
-
-  button:hover {
-    filter: none;
-  }
-
-  .counterBtn:hover {
-    transform: none !important;
-  }
-
-}
-
-
-/* ---------------------------------------------------------
-   🌙 SOMBRAS MÁS ELEGANTES EN TEMA OSCURO
---------------------------------------------------------- */
-
-[data-theme="oscuro"] button {
-  box-shadow:
-    0 5px 12px rgba(0,0,0,.30),
-    inset 0 1px 0 rgba(255,255,255,.10) !important;
+    outline-offset: 2px;
 }
 
 
